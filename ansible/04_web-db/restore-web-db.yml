@@ -1,0 +1,29 @@
+---
+- name: restore web-db.yml
+  hosts: all
+  tasks:
+    - name: 패키지 삭제
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - mariadb-server
+          - php
+          - php-mysqlnd
+          - php-pdo 
+        state: absent
+
+    - name: 웹페이지 삭제
+      ansible.builtin.file:
+          path: /var/www/html/index.php
+          state: absent
+
+    
+
+
+    - name: 방화벽에 서비스 해제
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: disabled
+

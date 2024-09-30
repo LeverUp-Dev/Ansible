@@ -1,0 +1,4 @@
+- name: 패키지 삭제 마지막
+  ansible.builtin.yum:
+    name: "{{ pkgs }}"
+    state: absent

@@ -1,0 +1,20 @@
+---
+- name: 시간 복구
+  hosts: datacenters
+
+  roles:
+    - rhel-system-roles.timesync
+  vars:
+    - host_timezone: 'Asia/Seoul'
+  post_tasks:
+    - name: 타임존 설정
+      community.general.timezone:
+        name: "{{ host_timezone }}"
+      notify: 크로니 재시작
+
+  handlers:
+    - name: 크로니 재시작
+      ansible.builtin.service:
+        name: chronyd
+        state: restarted
+...

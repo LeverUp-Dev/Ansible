@@ -1,0 +1,9 @@
+---
+- name: 파일 삭제
+  hosts: all
+  tasks:
+    - name: 파일 모두 삭제
+      ansible.builtin.file:
+        path: /home/user100/users.txt
+        state: absent
+...

@@ -1,0 +1,4 @@
+- name: httpd 서비스 정지
+  ansible.builtin.service:
+    name: "{{ svc }}"
+    state: stopped

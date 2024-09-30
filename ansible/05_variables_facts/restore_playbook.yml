@@ -1,0 +1,45 @@
+---
+- name: 웹 서버 설정과 인증 복구 작업
+  hosts: all
+  vars_files:
+    - vars/vars.yml
+  tasks:
+    - name: http, https 방화벽 닫기
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: disabled
+      loop: "{{ fw_svcs }}"
+
+    - name: /var/www/html/index.html 제거
+      ansible.builtin.file:
+        path: "{{ mainpage }}"
+        state: absent
+
+    - name: /var/www/html/.htaccess 제거
+      ansible.builtin.file:
+        path: "{{ htaccess_dst }}"
+        state: absent
+
+    - name: secrets 폴더 삭제
+      ansible.builtin.file:
+        path: etc/httpd/secrets
+        state: directory
+        recurse: true
+
+    - name: 패키지 삭제
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - mod_ssl
+        state: absent
+      
+    - name: 방화벽 내리기
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: disabled
+      loop: "{{ fw_svcs }}"
+      

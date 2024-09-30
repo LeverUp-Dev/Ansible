@@ -1,0 +1,4 @@
+- name: Task - 패키지 설치
+  ansible.builtin.dnf:
+    name: "{{ package.pkg_web }}"
+    state: latest

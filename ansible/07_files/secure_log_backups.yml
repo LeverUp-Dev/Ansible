@@ -1,0 +1,10 @@
+---
+- name: Secure 로그 수집
+  hosts: all
+  tasks:
+    - name: /var/log/secure 로그 파일 수집
+      ansible.builtin.fetch:
+        src: /var/log/secure
+        dest: "secure-backups/{{ inventory_hostname }}-secure"
+        flat: false
+...

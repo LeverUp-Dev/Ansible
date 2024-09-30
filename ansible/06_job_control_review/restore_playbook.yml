@@ -1,0 +1,29 @@
+---
+- name: Job 제어 복구
+  hosts: webservers
+  vars_files:
+    - vars.yml
+  gather_facts: true
+  tasks:
+    - name: 방화벽 내리기
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: 패키지 삭제
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - mod_ssl
+        state: absent
+
+    - name: 파일 삭제
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+        

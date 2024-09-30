@@ -1,0 +1,42 @@
+---
+- name: 하드웨어 보고서 작성
+  hosts: all
+  tasks:
+    - name: 파일 배포 - files/hwreport.txt -> /root/hwreport.txt
+      ansible.builtin.copy:
+        src: files/hwreport.txt
+        dest: /root/hwreport.txt
+        owner: root
+        group: root
+        mode: '0400'
+
+    - name: hwreport.txt 파일의 inventoryhostname 설정
+      ansible.builtin.replace:
+        path: /root/hwreport.txt
+        regexp: 'inventoryhostname'
+        replace: "{{ ansible_hostname }}"
+
+    - name: hwreport.txt 파일의 totalmem 설정
+      ansible.builtin.replace:
+        path: /root/hwreport.txt
+        regexp: 'totalmem'
+        replace: "{{ ansible_memtotal_mb }}"
+
+    - name: hwreport.txt 파일의 biosversion 설정
+      ansible.builtin.replace:
+        path: /root/hwreport.txt
+        regexp: 'biosversion'
+        replace: "{{ ansible_bios_version }}"
+
+    - name: hwreport.txt 파일의 sdasize 설정
+      ansible.builtin.replace:
+        path: /root/hwreport.txt
+        regexp: 'sdasize'
+        replace: "{{ ansible_devices.sda.size }}"
+
+    - name: hwreport.txt 파일 모으기
+      ansible.builtin.fetch:
+        src: /root/hwreport.txt
+        dest: ~/ansible/05_hwreport/result/hwreport-{{ inventory_hostname }}.txt
+        flat: yes
+        

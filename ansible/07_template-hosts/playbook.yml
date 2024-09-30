@@ -1,0 +1,12 @@
+---
+- name: 테스트 /etc/hosts
+  hosts: all
+  tasks:
+    - name: /etc/hosts.j2 test
+      ansible.builtin.template:
+        src: templates/hosts.j2
+        dest: /root/hosts
+        owner: root
+        group: root
+        mode: '0644'
+...

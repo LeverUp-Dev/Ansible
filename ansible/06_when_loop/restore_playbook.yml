@@ -1,0 +1,23 @@
+---
+- name: DB서버 복원 작업
+  hosts: all
+  vars:
+    packages:
+      - mariadb-server
+      - python3-PyMySQL
+    svc_db: mariadb
+  tasks:
+    - name: DB 서비스 내리기
+      ansible.builtin.service:
+        name: "{{ svc_db }}"
+        state: stopped
+        enabled: false
+
+    - name: DB 패키지 삭제
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"
+      when: ansible_distribution == 'CentOS'
+      # when: ansible_distribution == 'RedHat'
+...

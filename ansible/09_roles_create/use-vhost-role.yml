@@ -1,0 +1,27 @@
+---
+- name: Myvhost 역할 생성
+  hosts: webservers
+  tasks:
+  pre_tasks:
+    - name: Myvhost 시작 메세지
+      ansible.builtin.debug:
+        msg: "웹서버 설정 시작"
+
+    - name: Myvhost 실행
+      ansible.builtin.include_role:
+        name: myvhost
+
+  roles:
+    - myvhost
+
+  post_tasks:
+    - name: HTML 콘텐츠 다운로드
+      ansible.builtin.copy:
+        src: files/html/index.html
+        dest: "/var/www/vhosts/{{ ansible_hostname }}"
+        mode: '0644'
+
+    - name: Myvhost 끝 메세지
+      ansible.builtin.debug:
+        msg: "웹서버 설정 끝"
+...

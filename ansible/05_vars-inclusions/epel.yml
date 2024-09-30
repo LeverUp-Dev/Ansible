@@ -1,0 +1,9 @@
+---
+- name: 'Epel-release 다운로드'
+  hosts: all
+  tasks:
+    - name: 패키지 설치
+      ansible.builtin.yum:
+        name: 'epel-release.'
+        state: present
+...

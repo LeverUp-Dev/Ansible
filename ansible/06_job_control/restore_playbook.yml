@@ -1,0 +1,21 @@
+---
+- name: Task Failure Exercise
+  hosts: databases
+  vars:
+    web_package: httpd    
+    db_package: mariadb-server
+    db_service: mariadb
+  tasks:
+    - name: 서비스 내리기
+      ansible.builtin.service:
+        name: "{{db_service}}"
+        enabled: no
+        state: stopped
+    - name: 패키지 삭제
+      ansible.builtin.dnf:
+        name: "{{item}}"
+        state: absent
+      loop:
+        - "{{web_package    web_package: httpd    
+    db_package: mariadb-server
+    db_service: mariadb

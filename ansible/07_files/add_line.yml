@@ -1,0 +1,10 @@
+---
+- name: 파일에 텍스트 추가
+  hosts: all
+  tasks:
+    - name: 파일에 텍스트 한 줄 추가
+      ansible.builtin.lineinfile:
+        path: /home/user100/users.txt
+        line: This line was added by the lineinfile module.
+        state: present
+...

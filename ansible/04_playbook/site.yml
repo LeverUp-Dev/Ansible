@@ -1,0 +1,45 @@
+---
+- name: 아파치 웹 서버 설치 및 기동
+  hosts: webservers
+  tasks:
+    # 1) 패캐지 설치
+    #    # yum install httpd
+    # 2) 서비스 설정
+    #    * files/index.html -> web1/2/3:/var/www/html/index.html
+    # 3) 서비스 기동
+    #    # systemctl enable --now httpd
+    # 4) 방화벽 등록
+          # firewall-cmd --permanent -add-service=httpd
+
+  
+    # 1) 패캐지 설치
+    #    # yum install httpd
+    - name: 패캐지 설치
+      dnf:
+        name: httpd
+        state: latest
+
+    # 2) 서비스 설정
+    #    * files/index.html -> web1/2/3:/var/www/html/index.html
+    - name: 웹 서비스 설정
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+    # 3) 서비스 기동
+    #    # systemctl enable --now httpd
+    - name: 웹 서비스 기동
+      service:
+        name: httpd
+        state: restarted
+        enabled: true
+    # 4) 방화벽 등록
+    #      # firewall-cmd --permanent -add-service=httpd
+    #      # firewall-cmd --reload
+    - name: 방화벽에 등록
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+        

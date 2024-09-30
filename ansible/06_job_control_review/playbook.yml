@@ -1,0 +1,72 @@
+---
+- name: Job 제어
+  hosts: webservers
+  vars_files:
+    - vars.yml
+  gather_facts: true
+  tasks:
+    ###############################################
+    # 1) 정보 수집 및 필수 사양 점검
+    # 2) 패키지 설치 - httpd, mod_ssl, firewalld
+    # 3) 서비스 기동 - httpd, firewalld
+    # 4) 웹 서버 HTTPS 설정 - notity ~ handlers
+    # 5) 방화벽 포트 열기
+    # 6) handlers
+    ###############################################
+    # 1) 정보 수집 및 필수 사양 점검
+    # - 배포판 -> CentOS가 아니면 실패 메세지 출력
+    # - 메모리가 256mb 보다 작으면 실패 메세지 출력
+    - name: 시스템 사양 점검
+      ansible.builtin.fail:
+        msg: "이 서버{{ inventory_hostname }}은 최소사양에 부합하지 않습니다."
+      when: >
+        ansible_distribution != "CentOS"
+        or
+        ansible_memtotal_mb < min_ram_mb
+    
+    # 2) 패키지 설치 - httpd, mod_ssl, firewalld
+    - name: 패키지 설치
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: present
+
+    # 3) 서비스 기동 - httpd, firewalld
+    - name: 서비스 기동
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop: "{{ services }}"
+
+    # 4) 웹 서버 HTTPS 설정 - notity ~ handlers
+    - name: 웹서버 HTTPS 설정
+      block:
+        - name: 설정 파일 배포
+          ansible.builtin.copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+          loop: "{{ web_config_files }}"
+          notify: restarted web
+      rescue:
+        - name: 설정 파일 배포 에러메세지 출력
+          ansible.builtin.debug:
+            msg: "하나 이상의 설정 파일 배포에 문제 발생"
+
+    # 5) 방화벽 포트 열기
+    - name: 방화벽 포트 등록
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - http
+        - https
+  
+  # 6) handlers
+  handlers:
+    - name: restarted web
+      ansible.builtin.service:
+        name: "{{ web_service }}"
+        state: restarted
+...

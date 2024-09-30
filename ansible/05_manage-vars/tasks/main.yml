@@ -1,0 +1,22 @@
+---
+- name: 패키지 설치
+  ansible.builtin.dnf:
+    name:
+      - "{{ ansible_local.custom.package.pkg_db }}"
+      - "{{ ansible_local.custom.package.pkg_web }}"
+    state: latest
+
+- name: 서비스 기동
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: 
+    - "{{ ansible_local.custom.services.svc_db }}"
+    - "{{ ansible_local.custom.services.svc_web }}"
+
+- name: 웹서버 설정
+  ansible.builtin.copy:
+    content: "{{ ansible_fqdn }} : {{ ansible_default_ipv4.address }}"
+    dest: "{{ webroot }}/index.html"
+    mode: '0644'

@@ -1,0 +1,4 @@
+- name: /var/www/html/index.html 파일 삭제
+  ansible.builtin.file:
+    path: "{{ thisfile }}"
+    state: absent
